@@ -55,6 +55,19 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Dodatkowe zależności, aby używać JSP w Springu -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-jasper</artifactId>
+            <!-- dodalismy tutaj zaleznosc ktora obsluguje jsp
+            numer wersji będzie automatycznie nadany przez Spring Boot -->
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+        </dependency>
+
+
     </dependencies>
 
     <build>
