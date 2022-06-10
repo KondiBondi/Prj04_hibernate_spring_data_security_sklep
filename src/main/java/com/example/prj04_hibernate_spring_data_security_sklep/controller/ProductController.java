@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,4 +45,23 @@ public class ProductController {
             return "missing_product";
         }
     }
+
+    @GetMapping("/find")
+    public String search(Model model,
+                         @RequestParam(name="name", defaultValue="") String name,
+                         @RequestParam(name="min", defaultValue="0") BigDecimal min,
+                         @RequestParam(name="max", defaultValue="1000000000") BigDecimal max) {
+
+        List<Product> products = List.of();
+
+        if(name == null || name.isEmpty()) {
+            products = repository.findByPriceBetween(min, max); //tworzymy te dwie metody w interfejsie i nei musimy ich deklarowac a Spring je utworzy!
+        } else {
+            products = repository.findByProductNameContainingAndPriceBetween(name, min, max);
+        }
+        model.addAttribute("products", products);
+        return "wyszukiwarka";
+    }
+
+
 }
