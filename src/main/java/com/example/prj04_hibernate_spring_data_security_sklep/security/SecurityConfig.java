@@ -1,9 +1,14 @@
 package com.example.prj04_hibernate_spring_data_security_sklep.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import javax.sql.DataSource;
 
 
 @Configuration
@@ -16,6 +21,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //autentykacja to nei ejst autoryzacja
     //autentykacja to spawdzenie czy ktos jest tym za kogo sie podaje, poprzez haslo albo odcisk palca np
     //autoryzacja to ustalenie kto ma dostep do czego. reguly dostepu
+
+
+    //wstrzykujemy poalczenie do bazy danych
+
+    @Autowired
+    private DataSource dataSource;
+
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -51,14 +63,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     //definuje uzytkownikow tej aplikacji:
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        //w tej wersji ebzposrednio podajemy liste zuytkownikow w kodzie
-        auth.inMemoryAuthentication()
-                .withUser("ala")
-                .password("{noop}kot")
-                .roles("manager", "sprzedawca")
-                .and().withUser("ola")
-                .password("{noop}abc123").roles("sprzedawca")
-                .and().withUser("ula").password("{noop}abc123").roles();
+
+        PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+
+        //logowanie w zgodzie z danymi w bazie danych:
+        auth.jdbcAuthentication() //to wymaga podania usersByUsernameQuery i authorities - maja one zwracac odpwoednia strukture tzn
+                //username, password i czy wlaczony/aktywny (0/1) a nastepnie username dopasowany do roli. spring sam sobie zastapi ?
+                //nazwy kolumn nie musza bcy takie same, chodzi o kolejnosc. albo zwroci jeden wynik albo zero
+                .dataSource(dataSource)  //wskazujemy springowi gdzie ma info o podlaczeniu do bazy danych
+                .passwordEncoder(passwordEncoder)   //przekazujemy springowi decoder haseł (czesto robi sie z neigo beana zeby sie moc
+                //odwolywac w innych miejscach aplikacji ale my potrzebujemy go tylko tutaj )
+                .usersByUsernameQuery("SELECT username, password, enabled FROM spring_accounts WHERE username = ?")
+                .authoritiesByUsernameQuery("SELECT username, role FROM spring_account_roles WHERE username = ?");
+        //ZWARACA INFO O ROLACH DANEGO UZYTKOWNIKA. wynikiem mzoe byc wiele rekordow
+
+
+
+//        //w tej wersji ebzposrednio podajemy liste zuytkownikow w kodzie
+//        auth.inMemoryAuthentication()
+//                .withUser("ala")
+//                .password("{noop}kot")
+//                .roles("manager", "sprzedawca")
+//                .and().withUser("ola")
+//                .password("{noop}abc123").roles("sprzedawca")
+//                .and().withUser("ula").password("{noop}abc123").roles();
 
         // O co chodzi z noop?
         // Hasła mogą być "zaszyfrowane"/"zakodowane" na różne sposoby, aby nie było widać haseł bezpośrednio.
