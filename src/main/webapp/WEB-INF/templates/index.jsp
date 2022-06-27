@@ -24,31 +24,20 @@
     <li><a href="/whoami">sprawdź kim jesteś</a>
 </ul>
 
-<h2>Produkty - wersja właściwa</h2>
+<h2>Produkty - wersja webowa</h2>
 <ul>
     <li><a href="/products">Lista wszystkich produktów</a></li>
     <li><a href="/products/1">Jeden produkt</a></li>
     <li><a href="/products/find">Wyszukiwarka</a></li>
     <li><a href="/products/new">Dodaj nowy produkt</a></li>
+    <li><a href="/products/1/photo">Zdjęcie</a> produktu nr 1</li>
     <hr>
     <li><a href="/customers">lista klientów</a>
     <li><a href="/customers/new">nowy klient</a>
     <li><a href="/customers/ala@example.com/edit">edycja klienta</a>
-</ul>
-
-<h2>Produkty - wersje robocze</h2>
-<ul>
-    <li><a href="/products1">1 lista</a></li>
-    <li><a href="/products1/1">1 produkt</a></li>
-    <li><a href="/products1/find">1 find</a></li>
-    <li><a href="/products2">2 lista</a></li>
-    <li><a href="/products2/1">2 produkt</a></li>
-    <li><a href="/products2/find">2 find</a></li>
-    <li><a href="/products3">3 lista</a></li>
-    <li><a href="/products3/1">3 produkt</a></li>
-    <li><a href="/products3/find">3 find</a></li>
-    <li><a href="/products5">5 lista</a></li>
-    <li><a href="/products5/1">5 produkt</a></li>
+        <hr>
+    <li><a href="/products-em">Lista wszystkich produktów</a> - wersja z EntityManagerem</li>
+    <li><a href="/products-em/1">Jeden produkt</a> - wersja z EntityManagerem</li>
 </ul>
 
 <h2>REST</h2>
