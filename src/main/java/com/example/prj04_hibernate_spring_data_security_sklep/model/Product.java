@@ -2,6 +2,7 @@ package com.example.prj04_hibernate_spring_data_security_sklep.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 
@@ -22,12 +23,20 @@ public class Product implements Serializable {
 
     private String description;
 
+    @NotNull
+    @Max(99_999_999)  //typ long
     private BigDecimal price;
 
+
     @Column(name="product_name")
+    @NotNull //productName nie moze byc nullem i to jest zapisane w javie a nie postgresie
+    @Size(min = 3, max = 10) //mozna to wykorzystac dla stringow tablic list i map
     private String productName;
 
+    @DecimalMin("0.00")
+    @DecimalMax("0.99")
     private BigDecimal vat;
+
 
     public Product() {
     }

@@ -15,7 +15,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // Tymczasowo luzujemy reguły bezpieczeństwa: wszystkim użytownikom (również niezalogowanym) pozwalamy na dostęp do wszystkich stron.
-        http.authorizeHttpRequests().anyRequest().permitAll();
+        http.authorizeHttpRequests().anyRequest().permitAll()
+                .and().csrf().disable(); //wylaczamy zabezpieczenie csrf ktore wymaga aby w kazdym POST byl token wczesniej wygenerowany przez aplikację
+
     }
 
 

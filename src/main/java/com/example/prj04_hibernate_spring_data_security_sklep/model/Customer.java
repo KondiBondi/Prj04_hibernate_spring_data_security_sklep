@@ -2,6 +2,7 @@ package com.example.prj04_hibernate_spring_data_security_sklep.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 
@@ -29,6 +30,7 @@ public class Customer implements Serializable {
     private String phoneNumber;
 
     @Column(name="postal_code")
+    @Pattern(regexp="\\d{2}-\\d{3}")   //wzor w psotaci jakiej ma byc zapisany kod pocztowy
     private String postalCode;
 
     //bi-directional many-to-one association to Order
