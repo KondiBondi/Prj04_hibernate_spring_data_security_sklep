@@ -26,6 +26,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeHttpRequests()
                 //.anyRequest().permitAll() //kazdy mial prawo wyslac dowolne zapytanie
 
+                // Zapytanie jest dopasowywane do reguł po kolei i pierwsza reguła, do której zapytanie pasuje, jest brana pod uwagę.
+
+                //pojedyncza gwiazdka to pojedynczy krok a dwie gwiazdki to dowolna ilosc dowolnych znakow - antMatchers
                 .antMatchers("/products/new", "/products/*/edit").hasAuthority("ROLE_manager") // tylko manager może edytować
                 .antMatchers("/customers/new", "/customers/*/edit").hasAuthority("ROLE_manager")
                 .antMatchers("/products/find").authenticated() // zalogowany jako ktokolwiek może wyszukiwać
