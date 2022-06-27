@@ -5,10 +5,7 @@ import com.example.prj04_hibernate_spring_data_security_sklep.repository.Product
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -17,18 +14,23 @@ import java.util.Optional;
 @RestController  //jezeli wpiszemy tutaj adnotacje @RestController zamiast @Controller to nie musimy dopisywac @ResponseBody
 //bo wtedy juz kazde bedzie autoamtycznie odsylalo tresc a nei widok/szablonow. Automatycznie tak czy siak odsyla JSONa
 //dziala to tak jakby kazda metoda miala dopisane ResponseBody
+@RequestMapping("/rest/products")       //Najczęściej na poziomie klasy umieszcza się też @RequestMapping z ogólnym
+// adresem, pod którym działa cała ta klasa.
+       // * Metody wewnątrz mogą mieć podany "dalszy ciąg adresu".
 public class RProducts {  // r for resources bo sie mowi ze zasoby udsotepnia
 
     @Autowired
     private ProductRepository repository;
 
-    @GetMapping("/rest/products")
+    //@GetMapping("/rest/products")
+    @GetMapping
     //@ResponseBody     - nie potrzebne bo zuywamy RestController jako adnotacji nad klasą
     public List<Product> readAll() {
         return repository.findAll();
     }
 
-    @GetMapping("/rest/products/{id}")
+    //@GetMapping("/rest/products/{id}")
+    @GetMapping("/{id}")
     //@ResponseBody
     public Product readOne(@PathVariable("id") Integer productId) { //jak jest parametr typu prostego - int to jest obowiazkowy
         //Integer jest opcjonalny.  w tym konrketnym przypadku bez roznicy
