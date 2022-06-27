@@ -1,6 +1,8 @@
 package com.example.prj04_hibernate_spring_data_security_sklep.controller;
 
+import com.example.prj04_hibernate_spring_data_security_sklep.basket.Basket;
 import com.example.prj04_hibernate_spring_data_security_sklep.model.Product;
+import com.example.prj04_hibernate_spring_data_security_sklep.photo.PhotoUtl;
 import com.example.prj04_hibernate_spring_data_security_sklep.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,9 @@ import java.util.Optional;
 public class ProductController {
     @Autowired
     private ProductRepository repository;
+
+    @Autowired
+    private PhotoUtl photoUtl; //photoUtl jest componentem wiec mozna go wstrzyknąć
 
     @GetMapping
     public String allProducts(Model model) {
@@ -69,7 +74,8 @@ public class ProductController {
         return "product_form";
     }
 
-    @GetMapping("/{id}/edit") //dzieki adnotacji PathVariable ponizej mozemy przechwycic parametr ze sciezki i przekazac na zmienną
+    @GetMapping("/{id}/edit")
+    //dzieki adnotacji PathVariable ponizej mozemy przechwycic parametr ze sciezki i przekazac na zmienną
     public String editProduct(Model model, @PathVariable("id") int productId) {
 
 //dzialanie ponizszego kodu jest opisane powyzej w metodzie oneProduct
@@ -86,16 +92,16 @@ public class ProductController {
     }
 
     //zeby ubsluzyc tablice adresow czyli wiecej niz jeden adres trzeba uzyc nawiasow klamrowych
-    @PostMapping ({"/new", "/{id}/edit"})
+    @PostMapping({"/new", "/{id}/edit"})
     public String saveProduct(
             //model w ostatecznej wersji nie ejst potrzebny bo bledy wyswietla f:errors
             //Model model, //z tego mozna zrezygnowac bo product to obiekt automatycznie tworzony przez Spring wiec a jednak pozniej
             //trzeba bylo dodac zeby skorzystac z BindingResults
             //jest czescia modelu - jest tez adnotacja ale nie trzeba jej pisac - model attribute czy jakos tak
-           @Valid Product product, //dzieki ten adnotacji f:errors w jsp wie ze ma wyswietlic error
-                BindingResult bindingResult     //musi byc zeby metoda sie wykonala mimo bledow bo inaczej wywali sie
+            @Valid Product product, //dzieki ten adnotacji f:errors w jsp wie ze ma wyswietlic error
+            BindingResult bindingResult     //musi byc zeby metoda sie wykonala mimo bledow bo inaczej wywali sie
             //stronka zanim pojawia sie komunikaty o bledach - f:errors w jsp
-                ) {
+    ) {
         //Product product zamiast oddzielnie kazde pole/parametr
         //spring podstawia parametry z formularza, wystarczy je dodac jako parametry do metody
         //mzona dodac adnotacje @RequestParam daje kontrole nad szczegolami ale domyslnie, bez zadnej adnotacji
@@ -109,6 +115,7 @@ public class ProductController {
             //sa bledy, nie zapisujemy obiektu i pozostajemy na stronie formularza
             //model.addAttribute("errors", bindingResult.getAllErrors());
             System.out.println("Errory");
+            return "product_form";
         } else {
 
             //jesli nei ma bledow to zapisujemy do repozytaorium
@@ -131,7 +138,29 @@ public class ProductController {
 
         //repository.save(product);
         //model.addAttribute("product", product); //dlaczego nie potrzebne jest wyjasnienie pod nazwa metody
-        return "product_form";
+
     }
 
+    @GetMapping("/{id}/add-to-basket")
+    public String addToBasket(
+            @PathVariable("id") Integer productId, //trzeba dopisac {id} bo nazwa zmiennej jest inna niz zmienna w sciezce
+            @SessionAttribute Basket basket
+    ) {
+        Optional<Product> product = repository.findById(productId);     //optional sprawdza czy cos jest w pudelku
+        //dzieki temu mamy ifa nizej:
+        if (product.isPresent()) {
+            basket.incrementProduct(product.get());  //musi byc get bo samo product w tym przypadku to typ Optional
+        }
+        return "redirect:/products";
+
+
+    }
+
+    @GetMapping(path = "/{id}/photo", produces = "image/jpeg")  //produces - info dla pzregladarki ze taki adres wyswietlic
+    @ResponseBody       //tutaj zwracamy tresc a nie jsp
+    public byte[] getPhoto(
+            @PathVariable("id") Integer productId
+    ) {
+        return photoUtl.readPhoto(productId);
+    }
 }
