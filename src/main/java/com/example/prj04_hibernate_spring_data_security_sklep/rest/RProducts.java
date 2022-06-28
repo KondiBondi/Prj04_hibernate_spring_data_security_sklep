@@ -8,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,4 +53,49 @@ public class RProducts {  // r for resources bo sie mowi ze zasoby udsotepnia
         }
 
     }
+
+    /* Tylko jako przykład możliwości: odczyt wybranego pola z rekordu.
+     * To twórca usługi decyduje o tym, jakie adresy będą dostępne i co pod nimi będzie.
+     * Jeśli uważamy, że klientom "przyda się" bezpośredni dostęp do wybranego pola, to możemy stworzyć taką metodę,
+     * ale nie ma żadnego obowiązku, aby robić to dla wszystkich pól.
+     */
+    @GetMapping(path="/{id}/price", produces = "application/json")  //produces - co ma zwrocic
+    public BigDecimal getPrice(@PathVariable("id") Integer productId) {
+        Optional<Product> product = repository.findById(productId);
+        if(product.isPresent()) {
+            return product.get().getPrice();
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Brak produktu nr " + productId);
+        }
+    }
+
+
+    /* Operacja PUT służy do zapisania danych POD PODANYM ADRESEM.
+     * Na przykład PUT products/2/price z wartością 100 powinno ustawić w produkcie nr 2 cenę 100.
+     * Jeśli PUT zadziała, to następnie GET wysłany pod ten sam adres powinien odczytać te same dane, które PUT zapisał.
+     * (być może w innym formacie - to inny temat)
+     *
+     * PUT najczęściej jest używany do aktualizacji istniejących danych (pojedynczych wartości albo całych rekordów),
+     * ale może być też użyty do zapisania nowych danych.
+     * To, co najważniejsze, to fakt, że PUT zapisuje dane pod konkretnym adresem, do którego jest wysyłany.
+     */
+
+
+
+    @PutMapping(path="/{id}/price", produces = "application/json")  //produces - co ma zwrocic
+    public void setPrice(
+            @PathVariable("id") Integer productId,
+            BigDecimal newPrice
+    ) {
+        Optional<Product> optionalProduct = repository.findById(productId);
+        if(optionalProduct.isPresent()) {
+            Product product = optionalProduct.get();
+            product.setPrice(newPrice);
+            repository.save(product);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Brak produktu nr " + productId);
+        }
+    }
+
+
 }
