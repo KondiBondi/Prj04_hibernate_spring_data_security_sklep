@@ -30,7 +30,7 @@ public class Product implements Serializable {
 
     @Column(name="product_name")
     @NotNull //productName nie moze byc nullem i to jest zapisane w javie a nie postgresie
-    @Size(min = 3, max = 10) //mozna to wykorzystac dla stringow tablic list i map
+    //@Size(min = 3, max = 10) //mozna to wykorzystac dla stringow tablic list i map
     private String productName;
 
     @DecimalMin("0.00")
